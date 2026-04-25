@@ -1,5 +1,3 @@
-Viewed adv-03-unit-ble-notify.html:1-387
-
 針對 **`adv-03-unit-ble-notify` (BLE Notify 機制深論：「拉」到「推」)** 單元，這是一個從「主動詢問」進化到「事件驅動 (Event-Driven)」的關鍵課程，對於開發低延遲、省電的 IoT 系統至關重要。
 
 以下是在 **GitHub Classroom** 部署其作業 (Assignments) 的具體建議：
