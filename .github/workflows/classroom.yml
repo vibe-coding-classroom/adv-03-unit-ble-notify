@@ -1,0 +1,31 @@
+name: GitHub Classroom Autograding
+on: [push]
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  build:
+    name: Autograding
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Run Autograding Tests
+        run: npm test
+        
+      - name: Autograding Reporter
+        uses: education/autograding-grading-reporter@v1
+        if: always()
+        with:
+          runners: autograding

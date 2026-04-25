@@ -1,0 +1,12 @@
+{
+  "name": "adv-03-unit-ble-notify",
+  "version": "1.0.0",
+  "description": "BLE Notify Mechanism Lab",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "jest-environment-jsdom": "^29.0.0"
+  }
+}

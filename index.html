@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLE Notify Dashboard | Push Logic Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.5);
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #22d3ee;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(34, 211, 238, 0.1) 0%, transparent 50%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--accent);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .stat-box {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 0.25rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px var(--primary-glow);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: #4f46e5;
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px var(--primary-glow);
+        }
+
+        .btn:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .console {
+            grid-column: 1 / -1;
+            background: #000;
+            border-radius: 16px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .console-line { margin-bottom: 4px; }
+        .info { color: var(--accent); }
+        .success { color: var(--success); }
+        .warning { color: var(--warning); }
+
+        .visualizer {
+            height: 150px;
+            background: linear-gradient(180deg, transparent 0%, rgba(99, 102, 241, 0.1) 100%);
+            border-bottom: 2px solid var(--primary);
+            position: relative;
+            margin-top: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            stroke: var(--primary);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .status-badge.connected {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        #buffer-progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        #buffer-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ADV-03 BLE NOTIFY</h1>
+        <div class="subtitle">Push Logic & Event-Driven Architecture</div>
+    </header>
+
+    <main>
+        <!-- Connection Card -->
+        <div class="card">
+            <h2>
+                <span>📡</span> Connection
+                <span id="status" class="status-badge">Disconnected</span>
+            </h2>
+            <button id="connect-btn" class="btn">Connect to ESP32</button>
+            <div style="margin-top: 1.5rem;">
+                <p class="stat-label">Device Info</p>
+                <p id="device-info" style="font-size: 0.85rem; color: var(--text-dim); margin-top: 0.5rem;">No device connected</p>
+            </div>
+        </div>
+
+        <!-- Real-time Monitor -->
+        <div class="card">
+            <h2><span>⚡</span> Real-time Data</h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span id="sensor-val" class="stat-value">--</span>
+                    <span class="stat-label">Current Value</span>
+                </div>
+                <div class="stat-box">
+                    <span id="packet-count" class="stat-value">0</span>
+                    <span class="stat-label">Notifications</span>
+                </div>
+            </div>
+            <div class="visualizer">
+                <svg class="wave" viewBox="0 0 400 150">
+                    <path id="path" d="M0 75 Q 100 75, 200 75 T 400 75" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Buffer Manager -->
+        <div class="card">
+            <h2><span>📦</span> Buffer Reassembly</h2>
+            <p style="font-size: 0.85rem; color: var(--text-dim);">MTU Fragmentation Monitor</p>
+            <div id="buffer-progress"><div id="buffer-bar"></div></div>
+            <div style="margin-top: 1rem; display: flex; justify-content: space-between; font-size: 0.75rem;">
+                <span id="buffer-status">Waiting for data...</span>
+                <span id="mtu-usage">0 / 512 bytes</span>
+            </div>
+            <div id="last-json" style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.3); border-radius: 8px; font-family: monospace; font-size: 0.75rem; color: var(--success); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                {}
+            </div>
+        </div>
+
+        <!-- Terminal -->
+        <div class="console" id="terminal">
+            <div class="console-line info">[System] Dashboard initialized. Ready for BLE connection.</div>
+            <div class="console-line info">[System] Awaiting "Notify" events from firmware...</div>
+        </div>
+    </main>
+
+    <script src="src/buffer_manager.js"></script>
+    <script src="src/ble_app.js"></script>
+</body>
+</html>
