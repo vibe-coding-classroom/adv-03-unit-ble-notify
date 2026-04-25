@@ -18,10 +18,10 @@ jobs:
         with:
           node-version: '18'
           
-      - name: Buffer Logic Test
+      - name: buffer-logic-test
         uses: education/autograding-command-grader@v1
         with:
-          test-name: Buffer Logic Test
+          test-name: buffer-logic-test
           setup-command: npm install
           command: npm test
           timeout: 10
@@ -31,4 +31,4 @@ jobs:
         uses: education/autograding-grading-reporter@v1
         if: always()
         with:
-          runners: Buffer Logic Test
+          runners: buffer-logic-test
