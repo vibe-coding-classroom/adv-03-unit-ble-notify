@@ -11,12 +11,10 @@ document.body.innerHTML = `
     <div id="sensor-val"></div>
 `;
 
-// Mock TextDecoder since it might not be in JSDOM
-global.TextDecoder = class {
-    decode(view) {
-        return String.fromCharCode.apply(null, new Uint8Array(view.buffer || view));
-    }
-};
+// Mock TextDecoder and TextEncoder since they are not in JSDOM
+const { TextEncoder, TextDecoder } = require('util');
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 // Require the logic to test
 require('../src/buffer_manager.js');
