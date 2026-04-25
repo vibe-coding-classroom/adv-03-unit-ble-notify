@@ -18,17 +18,5 @@ jobs:
         with:
           node-version: '18'
           
-      - name: buffer-logic-test
-        uses: education/autograding-command-grader@v1
-        with:
-          test-name: buffer-logic-test
-          setup-command: npm install
-          command: npm test
-          timeout: 10
-          max-score: 100
-          
-      - name: Autograding Reporter
-        uses: education/autograding-grading-reporter@v1
-        if: always()
-        with:
-          runners: buffer-logic-test
+      - name: Autograding
+        uses: education/autograding@v1
